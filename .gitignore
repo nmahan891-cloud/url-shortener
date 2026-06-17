@@ -1,7 +1,22 @@
-# .gitignore
+# محیط مجازی
 venv/
-__pycache__/
-instance/*.db
+env/
 .env
+
+# فایل‌های کش پایتون
+__pycache__/
 *.pyc
+*.pyo
+
+# دیتابیس
+instance/*.db
+instance/*.sqlite
+
+# فایل‌های سیستمی
 .DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
