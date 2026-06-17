@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header-icon">👤</div>
+<h1>{{ t('profile_title') }}</h1>
+<p class="subtitle">{% if lang == 'fa' %}اطلاعات حساب کاربری شما{% else %}Your account information{% endif %}</p>
+
+<form method="post">
+    {{ csrf_token }}
+    
+    <div class="input-wrapper">
+        <span class="input-icon">👤</span>
+        <input type="text" name="username" value="{{ user.username }}" required>
+    </div>
+    
+    <div class="input-wrapper">
+        <span class="input-icon">📧</span>
+        <input type="email" name="email" value="{{ user.email }}" required>
+    </div>
+    
+    <button type="submit" class="btn-primary">💾 {% if lang == 'fa' %}ذخیره تغییرات{% else %}Save Changes{% endif %}</button>
+</form>
+
+<p style="text-align:center;margin-top:20px;color:#5a5a7a;font-size:13px;">
+    {% if lang == 'fa' %}عضویت از:{% else %}Member since:{% endif %} {{ user.created_at.strftime('%Y/%m/%d') }}
+</p>
+{% endblock %}

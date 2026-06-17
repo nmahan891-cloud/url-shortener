@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html dir="{{ 'rtl' if lang == 'fa' else 'ltr' }}" lang="{{ lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ t('site_title') }}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔗</text></svg>">
+</head>
+<body>
+    <header class="header">
+        <div class="header-brand">
+            <span class="logo">🔗</span>
+            <a href="{{ url_for('index') }}">{{ t('header_title') }}</a>
+        </div>
+        
+        <nav class="nav-links">
+            <a href="{{ url_for('index') }}">🏠 {% if lang == 'fa' %}خانه{% else %}Home{% endif %}</a>
+            <a href="{{ url_for('about') }}">ℹ️ {% if lang == 'fa' %}درباره{% else %}About{% endif %}</a>
+            <a href="{{ url_for('contact') }}">📬 {% if lang == 'fa' %}تماس{% else %}Contact{% endif %}</a>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('dashboard') }}">📊 {% if lang == 'fa' %}داشبورد{% else %}Dashboard{% endif %}</a>
+                <a href="{{ url_for('profile') }}">👤 {{ current_user.username }}</a>
+                <a href="{{ url_for('logout') }}">🚪 {% if lang == 'fa' %}خروج{% else %}Logout{% endif %}</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">🔐 {% if lang == 'fa' %}ورود{% else %}Login{% endif %}</a>
+                <a href="{{ url_for('register') }}">📝 {% if lang == 'fa' %}ثبت‌نام{% else %}Register{% endif %}</a>
+            {% endif %}
+        </nav>
+        
+        <div class="lang-switch">
+            <span class="lang-label {% if lang == 'fa' %}active{% endif %}">FA</span>
+            <label class="switch">
+                <input type="checkbox" id="langToggle" {% if lang == 'en' %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <span class="lang-label {% if lang == 'en' %}active{% endif %}">EN</span>
+        </div>
+    </header>
+    
+    <main class="main-content">
+        <div class="container {% block container_class %}{% endblock %}">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <ul class="flashes">
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+    
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="{{ url_for('about') }}">{% if lang == 'fa' %}درباره ما{% else %}About Us{% endif %}</a>
+            <a href="{{ url_for('contact') }}">{% if lang == 'fa' %}تماس با ما{% else %}Contact{% endif %}</a>
+            <a href="{{ url_for('terms') }}">{% if lang == 'fa' %}قوانین{% else %}Terms{% endif %}</a>
+            <a href="{{ url_for('privacy') }}">{% if lang == 'fa' %}حریم خصوصی{% else %}Privacy{% endif %}</a>
+        </div>
+        <p>{{ t('footer_text') }}</p>
+    </footer>
+    
+    <div id="toast"></div>
+    
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        document.getElementById('langToggle').addEventListener('change', function() {
+            window.location.href = '/set_language/' + (this.checked ? 'en' : 'fa');
+        });
+        
+        function copyToClipboard(text) {
+            const successMsg = '{{ t('copy_toast') }}';
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast(successMsg);
+                }).catch(() => {
+                    fallbackCopy(text, successMsg);
+                });
+            } else {
+                fallbackCopy(text, successMsg);
+            }
+        }
+        
+        function fallbackCopy(text, successMsg) {
+            const input = document.createElement('input');
+            input.value = text;
+            document.body.appendChild(input);
+            input.select();
+            try {
+                document.execCommand('copy');
+                showToast(successMsg);
+            } catch (e) {
+                showToast('❌ Failed to copy');
+            }
+            document.body.removeChild(input);
+        }
+        
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+</html>

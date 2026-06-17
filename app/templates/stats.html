@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header-icon">📊</div>
+<h1 style="background:linear-gradient(135deg,#25c2a0 0%,#0f8b7a 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+    {{ t('stats_title') }}
+</h1>
+<p class="subtitle">{{ t('stats_subtitle') }}</p>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-value">{{ url.clicks }}</span>
+        <span class="stat-label">{{ t('stats_clicks') }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">{{ url.created_at.strftime('%Y/%m/%d') }}</span>
+        <span class="stat-label">{{ t('stats_date') }}</span>
+    </div>
+    <div class="stat-card stat-full">
+        <span style="display:block;margin-bottom:6px;font-size:12px;color:#a7a9be;">{{ t('stats_original') }}</span>
+        <span class="stat-original">{{ url.original_url }}</span>
+    </div>
+    <div class="stat-card stat-full">
+        <span style="display:block;margin-bottom:6px;font-size:12px;color:#a7a9be;">{{ t('stats_short') }}</span>
+        <span class="stat-original" style="color:#ff8906;">
+            <a href="{{ request.host_url }}{{ url.short_code }}" target="_blank" style="color:#ff8906;text-decoration:none;">
+                {{ request.host_url }}{{ url.short_code }}
+            </a>
+        </span>
+    </div>
+</div>
+
+<!-- نمودار کلیک‌ها بر اساس روز -->
+{% if clicks_by_day %}
+<div class="chart-container">
+    <h3>📈 {% if lang == 'fa' %}کلیک‌ها بر اساس روز{% else %}Clicks by Day{% endif %}</h3>
+    <div class="chart-bar">
+        {% for day, count in clicks_by_day.items()|sort %}
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;">
+            <div class="bar" style="height:{{ (count / clicks_by_day.values()|max * 100)|int + 10 }}px;"></div>
+            <span class="bar-label">{{ day[5:] }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- نمودار کلیک‌ها بر اساس کشور -->
+{% if clicks_by_country %}
+<div class="chart-container">
+    <h3>🌍 {% if lang == 'fa' %}کلیک‌ها بر اساس کشور{% else %}Clicks by Country{% endif %}</h3>
+    <div class="chart-bar">
+        {% for country, count in clicks_by_country.items()|sort(attribute='1', reverse=True) %}
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;">
+            <div class="bar" style="height:{{ (count / clicks_by_country.values()|max * 100)|int + 10 }}px;background:linear-gradient(180deg,#ff8906,#f25f4c);"></div>
+            <span class="bar-label">{{ country }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- QR Code -->
+<div id="qr" class="qr-container">
+    <h3>📱 {% if lang == 'fa' %}QR Code{% else %}QR Code{% endif %}</h3>
+    <img src="data:image/png;base64,{{ qr_base64 }}" alt="QR Code">
+    <p style="color:#a7a9be;font-size:13px;">{% if lang == 'fa' %}اسکن کنید تا لینک باز شود{% else %}Scan to open link{% endif %}</p>
+    <button class="btn-sm btn-copy" onclick="copyToClipboard('{{ request.host_url }}{{ url.short_code }}')">📋 {{ t('btn_copy') }}</button>
+</div>
+
+<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+    <a href="{{ url_for('index') }}" class="back-link">{{ t('stats_back') }}</a>
+    <a href="{{ request.host_url }}{{ url.short_code }}" target="_blank" class="back-link" style="background:#ff8906;color:#0f0e17;">
+        {{ t('stats_visit') }}
+    </a>
+</div>
+{% endblock %}

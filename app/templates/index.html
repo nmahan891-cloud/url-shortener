@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header-icon">🔗</div>
+<h1>{{ t('header_title') }}</h1>
+<p class="subtitle">{{ t('header_subtitle') }}</p>
+
+<form method="post">
+    {{ form.hidden_tag() }}
+    
+    <div class="input-wrapper">
+        <span class="input-icon">🌐</span>
+        {{ form.original_url(placeholder=t('placeholder')) }}
+    </div>
+    
+    <div class="input-wrapper">
+        <span class="input-icon">✏️</span>
+        {{ form.custom_code(placeholder='کد دلخواه (اختیاری)') }}
+    </div>
+    
+    <div class="input-wrapper">
+        <span class="input-icon">⏳</span>
+        {{ form.expires_days() }}
+    </div>
+    
+    <button type="submit" class="btn-primary">
+        <span>⚡</span> {{ t('btn_shorten') }}
+    </button>
+</form>
+
+{% if short_url %}
+<div class="result">
+    <span class="result-label">{{ t('result_label') }}</span>
+    <a href="{{ short_url }}" target="_blank" class="result-link">{{ short_url }}</a>
+    
+    <div class="result-actions">
+        <button class="btn-sm btn-copy" onclick="copyToClipboard('{{ short_url }}')">📋 {{ t('btn_copy') }}</button>
+        <a href="{{ url_for('show_stats', short_code=short_code) }}" class="btn-sm btn-stats">📊 {{ t('btn_stats') }}</a>
+        <a href="{{ short_url }}" target="_blank" class="btn-sm btn-stats">🚀 {{ t('btn_visit') }}</a>
+        <a href="{{ url_for('show_stats', short_code=short_code) }}#qr" class="btn-sm btn-success">📱 {{ t('btn_qr') }}</a>
+    </div>
+</div>
+{% endif %}
+
+{% if recent_links %}
+<div class="recent-section">
+    <div class="recent-title">{{ t('recent_title') }}</div>
+    {% for link in recent_links %}
+    <div class="recent-item">
+        <a href="{{ url_for('go_to_link', short_code=link.short_code) }}" class="short" target="_blank">
+            {{ request.host_url }}{{ link.short_code }}
+        </a>
+        <span class="clicks-badge">{{ link.clicks }} {{ t('clicks') }}</span>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<p class="footer-note">{{ t('footer_note') }}</p>
+{% endblock %}

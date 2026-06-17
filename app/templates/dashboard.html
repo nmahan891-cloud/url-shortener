@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block container_class %}container-wide{% endblock %}
+
+{% block content %}
+<div class="header-icon">📊</div>
+<h1>{{ t('dashboard_title') }}</h1>
+<p class="subtitle">{% if lang == 'fa' %}مدیریت لینک‌های شما{% else %}Manage your links{% endif %}</p>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-value">{{ total_urls }}</span>
+        <span class="stat-label">{% if lang == 'fa' %}تعداد لینک‌ها{% else %}Total Links{% endif %}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">{{ total_clicks }}</span>
+        <span class="stat-label">{% if lang == 'fa' %}مجموع کلیک‌ها{% else %}Total Clicks{% endif %}</span>
+    </div>
+</div>
+
+{% if user_urls %}
+<div class="recent-section">
+    <div class="recent-title">🔗 {% if lang == 'fa' %}همه لینک‌های شما{% else %}All Your Links{% endif %}</div>
+    {% for link in user_urls %}
+    <div class="recent-item">
+        <div>
+            <a href="{{ url_for('go_to_link', short_code=link.short_code) }}" class="short" target="_blank">
+                {{ request.host_url }}{{ link.short_code }}
+            </a>
+            <div style="font-size:11px;color:#5a5a7a;margin-top:2px;">
+                {{ link.original_url[:50] }}...
+            </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+            <span class="clicks-badge">{{ link.clicks }} {{ t('clicks') }}</span>
+            <a href="{{ url_for('show_stats', short_code=link.short_code) }}" class="btn-sm btn-stats">📊</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div style="text-align:center;padding:40px 0;color:#a7a9be;">
+    <p style="font-size:48px;">😕</p>
+    <p>{% if lang == 'fa' %}هنوز لینکی کوتاه نکرده‌اید!{% else %}You haven't shortened any links yet!{% endif %}</p>
+    <a href="{{ url_for('index') }}" class="btn-primary" style="display:inline-block;width:auto;margin-top:20px;">
+        🔗 {% if lang == 'fa' %}اولین لینک را کوتاه کن{% else %}Shorten your first link{% endif %}
+    </a>
+</div>
+{% endif %}
+{% endblock %}

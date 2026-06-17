@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header-icon">📝</div>
+<h1>{{ t('register_title') }}</h1>
+<p class="subtitle">{% if lang == 'fa' %}ایجاد حساب کاربری جدید{% else %}Create a new account{% endif %}</p>
+
+<form method="post">
+    {{ form.hidden_tag() }}
+    
+    <div class="input-wrapper">
+        <span class="input-icon">👤</span>
+        {{ form.username(placeholder='Username') }}
+    </div>
+    
+    <div class="input-wrapper">
+        <span class="input-icon">📧</span>
+        {{ form.email(placeholder='Email') }}
+    </div>
+    
+    <div class="input-wrapper">
+        <span class="input-icon">🔑</span>
+        {{ form.password(placeholder='Password') }}
+    </div>
+    
+    <button type="submit" class="btn-primary">📝 {{ t('register_title') }}</button>
+</form>
+
+<p style="text-align:center;margin-top:20px;color:#a7a9be;">
+    {% if lang == 'fa' %}قبلاً ثبت‌نام کرده‌اید؟{% else %}Already have an account?{% endif %}
+    <a href="{{ url_for('login') }}" style="color:#ff8906;text-decoration:none;">
+        {% if lang == 'fa' %}وارد شوید{% else %}Login{% endif %}
+    </a>
+</p>
+{% endblock %}
